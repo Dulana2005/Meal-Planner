@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sunday Batch</title>
+<meta name="theme-color" content="#c98a00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sunday Batch">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>[hidden]{{display:none!important}}html{{-webkit-text-size-adjust:100%}}:root{{padding-top:env(safe-area-inset-top,0px)}}
+/* Layout: phone-first app shell — sticky header, one scrolling column, fixed bottom tab bar. Turmeric accent on cool slate, like a spice tin on a steel bench. */
+:root{
+  --bg:#f3f4f2; --card:#ffffff; --ink:#1d2428; --muted:#5d686e; --line:#dde1df;
+  --accent:#c98a00; --accent-ink:#3a2700; --accent-soft:#f7e7bf;
+  --teal:#1f6f6a; --teal-soft:#d9ecea; --good:#2f7d3b; --warn:#b5651d; --bad:#b3362c;
+  --f-display:"Bricolage Grotesque", ui-rounded, system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121618; --card:#1b2124; --ink:#e8ecea; --muted:#9aa5a9; --line:#2c3438;
+  --accent:#e8a817; --accent-ink:#1d1400; --accent-soft:#3a2f12;
+  --teal:#5bbcb3; --teal-soft:#16302e; --good:#6cc27a; --warn:#e39a52; --bad:#ef7a6e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121618; --card:#1b2124; --ink:#e8ecea; --muted:#9aa5a9; --line:#2c3438;
+  --accent:#e8a817; --accent-ink:#1d1400; --accent-soft:#3a2f12;
+  --teal:#5bbcb3; --teal-soft:#16302e; --good:#6cc27a; --warn:#e39a52; --bad:#ef7a6e; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--f-body);margin:0;padding:0 16px calc(88px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;gap:12px;padding-block:12px 10px;border-bottom:1px solid var(--line);margin:0 -16px;padding-inline:16px}
+header.top h1{font-size:22px;font-weight:800;flex:1;min-width:0}
+header.top h1 span{color:var(--accent)}
+.iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 12px;font:600 14px var(--f-body);cursor:pointer}
+main{max-width:640px;margin:0 auto;padding-block:16px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.eyebrow{font:700 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:700 14px var(--f-body);padding:7px 12px;border-radius:8px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.meter .lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.meter .lbl b{color:var(--ink);font-family:var(--f-num);font-weight:500}
+.bar{height:8px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:4px;position:relative}
+.bar i{display:block;height:100%;background:var(--teal);border-radius:5px}
+.bar.over i{background:var(--warn)} .bar.under i{background:var(--bad)}
+.state{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;display:inline-block}
+.state.ok{background:var(--teal-soft);color:var(--teal)} .state.lo{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)} .state.hi{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.slot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:start}
+.slot select{grid-column:1/-1;width:100%;font:16px var(--f-body);padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.slot .macro{font-size:13px;color:var(--muted)}
+.ing{font-size:14px;color:var(--muted);margin:6px 0 0;padding-left:18px}
+.ing li{margin:2px 0}
+.btn{border:0;border-radius:12px;padding:12px 16px;font:700 15px var(--f-body);cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:focus-visible,.iconbtn:focus-visible,select:focus-visible,input:focus-visible,.seg button:focus-visible,nav button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.opt{display:flex;flex-direction:column;gap:8px}
+.opt h3{font-size:17px}
+.opt ul{margin:0;padding-left:18px;font-size:14px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.tag.best{background:var(--accent-soft);border-color:transparent;color:var(--ink);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.r,th.r{text-align:right}
+.scroll{overflow-x:auto}
+.est{color:var(--warn);font-size:12px}
+.have{opacity:.45;text-decoration:line-through}
+label.chk{display:flex;gap:10px;align-items:center}
+input[type=number],input[type=text]{width:100%;font:16px var(--f-num);padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2 label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+ol.steps{padding-left:22px;margin:8px 0 0} ol.steps li{margin:6px 0}
+.note{font-size:13px;color:var(--muted)}
+.locked{font-size:13px;color:var(--warn)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
+nav.tabs button{border:0;background:transparent;color:var(--muted);font:700 13px var(--f-body);padding:8px 4px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2}
+nav.tabs button[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.sync{font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;z-index:9}
+@media (max-width:380px){.meters{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Sunday <span>Batch</span></h1>
+  <span class="sync" id="sync">Saved on this phone</span>
+  <button class="iconbtn" id="openSettings" type="button">Settings</button>
+</header>
+<main id="app"></main>
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-tab="plan"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Plan</button>
+  <button type="button" data-tab="options"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h10M5 17h6"/><circle cx="18" cy="16" r="3"/></svg>Options</button>
+  <button type="button" data-tab="shop"><svg viewBox="0 0 24 24"><path d="M5 7h14l-1.5 11h-11z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>Shop</button>
+  <button type="button" data-tab="cook"><svg viewBox="0 0 24 24"><path d="M4 11h16v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6z"/><path d="M9 4v3M12 4v3M15 4v3"/></svg>Cook</button>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Product data: per 100 g (or 100 ml) from each product's Woolworths listing; Jalsa from the pack label ---------- */
+const WW="https://www.woolworths.com.au/shop/productdetails/";
+const P={
+ milk:{n:"Dairy Farmers Protein Low Fat Milk",size:"2L",pack:2000,kj:230,p:6.0,f:1.3,c:4.7,price:5.50,est:true,id:"6052863",m:{cup:250}},
+ yp_sc:{n:"YoPRO High Protein Yoghurt Salted Caramel",size:"700g",pack:700,kj:245,p:9.5,f:0.5,c:3.8,price:8.00,id:"204716",m:{cup:260}},
+ yp_van:{n:"YoPRO Protein Yoghurt Vanilla",size:"700g",pack:700,kj:238,p:9.5,f:0.3,c:3.8,price:8.00,est:true,id:"867015",m:{cup:260}},
+ yp_plain:{n:"YoPRO Protein Yoghurt Plain",size:"700g",pack:700,kj:251,p:10.6,f:0.3,c:3.5,price:8.00,id:"686218",m:{cup:260}},
+ weetbix:{n:"Weet-Bix Breakfast Cereal",size:"575g",pack:575,kj:1480,p:12.4,f:1.3,c:65.9,price:5.00,id:"793114",m:{each:16.5,one:"biscuit",many:"biscuits"}},
+ oats:{n:"Woolworths Rolled Traditional Oats",size:"750g",pack:750,kj:1590,p:13.1,f:9.0,c:55.8,price:2.00,est:true,id:"321220",m:{cup:90}},
+ berries:{n:"Woolworths Frozen Mixed Berries",size:"500g",pack:500,kj:171,p:1.0,f:1.0,c:7.2,price:6.50,id:"260010",m:{cup:140}},
+ cocoa:{n:"Woolworths Cocoa Powder",size:"375g",pack:375,kj:1250,p:22,f:11,c:12.5,price:7.50,id:"311782",m:{tbsp:5}},
+ granola:{n:"Kellogg's High Protein Granola Forest Berries",size:"450g",pack:450,kj:1650,p:24,f:10.2,c:43.6,price:7.00,est:true,id:"6031000",m:{cup:100}},
+ nutri:{n:"Kellogg's Nutri-Grain High Protein Crunch Choc Malt",size:"500g",pack:500,kj:1650,p:28.3,f:3.6,c:58.3,price:8.00,est:true,id:"910382",m:{cup:30}},
+ smoothie:{n:"Dairy Farmers Protein Smoothie Vanilla",size:"400mL",pack:400,kj:270,p:7.5,f:1.5,c:5.2,price:3.40,id:"6050505",m:{each:400,one:"bottle",many:"bottles"}},
+ pudding:{n:"Wicked Sister High Protein Chocolate Pudding",size:"170g",pack:170,kj:415,p:9.0,f:3.7,c:5.8,price:3.50,est:true,id:"170475",m:{each:170,one:"pot",many:"pots"}},
+ musashi:{n:"Musashi Crisp Protein Bar Chocolate Peanut",size:"60g",pack:60,kj:1650,p:33.4,f:16.2,c:15.9,price:4.00,est:true,id:"153164",m:{each:60,one:"bar",many:"bars"}},
+ vetta:{n:"Vetta SMART Protein Spaghetti",size:"375g",pack:375,kj:1440,p:24,f:2.3,c:50,price:3.00,id:"449465",m:{pack:true}},
+ konjac_s:{n:"Slendier Konjac Spaghetti Style",size:"400g",pack:400,kj:35,p:1,f:1,c:1,price:3.20,id:"830129",m:{pack:true}},
+ konjac_n:{n:"Slendier Konjac Noodle Style",size:"400g",pack:400,kj:35,p:1,f:1,c:1,price:3.20,id:"830130",m:{pack:true}},
+ tvp:{n:"Macro Textured Vegetable Protein",size:"200g",pack:200,kj:1350,p:53.4,f:1.9,c:13.8,price:3.50,id:"686546",m:{cup:100}},
+ passata:{n:"Macro Organic Passata",size:"700g",pack:700,kj:100,p:1.4,f:0.2,c:3.6,price:2.50,id:"700648",m:{pack:true}},
+ onion:{n:"Woolworths Prep Set Go Frozen Diced Onions",size:"500g",pack:500,kj:142,p:1.3,f:1.0,c:5.8,price:3.00,id:"61998",m:{pack:true}},
+ mush:{n:"Woolworths Mushroom Sliced",size:"500g",pack:500,kj:86,p:2.3,f:0.4,c:0,price:6.00,id:"89466",m:{pack:true}},
+ parm:{n:"Perfect Italiano Parmesan Grated",size:"125g",pack:125,kj:1540,p:31.9,f:26.6,c:1.4,price:4.50,id:"42161",m:{tbsp:5}},
+ paneer:{n:"Jalsa Paneer",size:"1kg",pack:1000,kj:989,p:20,f:16.4,c:1.6,price:20.00,est:true,id:null,m:{each:100,one:"piece",many:"pieces"}},
+ chicken:{n:"Made With Plants Meat-Free Chicken",size:"250g",pack:250,kj:586,p:22.9,f:2.2,c:6.8,price:7.60,id:"6074114",m:{pack:true}},
+ stirfry:{n:"Woolworths Prep Set Go Frozen Stir Fry Mixed Vegetables",size:"500g",pack:500,kj:138,p:1.9,f:1.0,c:4.4,price:2.50,id:"61999",m:{pack:true}},
+ vegrice:{n:"Birds Eye Frozen Veggie Rice Carrot Cauliflower & Broccoli",size:"500g",pack:500,kj:143,p:2.0,f:0.1,c:5.0,price:5.80,id:"117518",m:{pack:true}},
+ rice:{n:"Woolworths Microwave Basmati Rice",size:"250g",pack:250,kj:614,p:3.3,f:2.1,c:27.8,price:1.65,id:"360348",m:{cup:160}},
+ tofu:{n:"Macro Firm Tofu",size:"450g",pack:450,kj:541,p:14.8,f:3.9,c:5.6,price:3.80,est:true,id:"23038",m:{pack:true}},
+ peas:{n:"Woolworths Essentials Frozen Peas",size:"1kg",pack:1000,kj:247,p:4.8,f:1.0,c:6.4,price:2.70,est:true,id:"96845",m:{cup:140}},
+ spinach:{n:"Bell Farms Frozen Chopped Spinach Portions",size:"250g",pack:250,kj:98,p:2.8,f:1.0,c:1.0,price:1.25,id:"516857",m:{pack:true}},
+ pti:{n:"Passage To India Simmer Sauce Tikka Masala",size:"375g",pack:375,kj:311,p:2.4,f:3.6,c:8.5,price:4.00,est:true,id:"186116",m:{pack:true}},
+ lkk:{n:"Lee Kum Kee Vegetarian Stir Fry Sauce",size:"510g",pack:510,kj:547,p:1.4,f:1.0,c:30.1,price:6.00,est:true,id:"663280",m:{cup:280}},
+ gochu:{n:"O'Food Korean Gochujang",size:"170g",pack:170,kj:903,p:3.9,f:2.9,c:43.5,price:5.00,est:true,id:"234341",m:{cup:280}},
+ flour:{n:"Essentials Self Raising Flour",size:"1kg",pack:1000,kj:1480,p:10,f:1.3,c:73.2,price:1.60,est:true,id:"33296",m:{cup:150}},
+ noegg:{n:"Orgran No Egg Egg Replacer",size:"200g",pack:200,kj:1332,p:0,f:0.5,c:74.5,price:6.00,est:true,id:"39236",m:{tsp:3}},
+ powder:{n:"Your protein powder",size:"",pack:1000,kj:0,p:0,f:0,c:0,price:0,est:true,id:null,m:{cup:120},user:true}
+};
+
+/* ---------- Recipes: grams per portion. flex = the ingredient the app may scale to hit your calories ---------- */
+const R=[
+ {id:"B1",slot:"B",name:"Salted caramel Weet-Bix berry jars",ing:{weetbix:33,milk:125,yp_sc:175,berries:71},flex:{pid:"weetbix",min:33,max:50,step:16.5},stage:3,
+  steps:["Line up 7 jars. Crush {weetbix:p} into each weekday jar and {weetbix:pw} into each weekend jar (label those).","Pour {milk:p} protein milk into every jar and let it soak 2 minutes.","Spoon {yp_sc:p} YoPRO Salted Caramel on top, then {berries:p} frozen berries.","Lid on and refrigerate. These keep 4 days, so make 4 on Sunday and 3 midweek. They soften overnight into a cheesecake texture; stir if there's liquid at the bottom."]},
+ {id:"B2",slot:"B",name:"Chocolate berry overnight oats",ing:{oats:40,milk:300,cocoa:10,berries:71},flex:{pid:"oats",min:30,max:60,step:5},stage:3,
+  steps:["Into each of 7 jars put {oats:p} rolled oats ({oats:pw} in the 2 weekend jars, labelled).","Add {cocoa:p} cocoa and 1 Natvia stick to every jar.","Pour {milk:p} protein milk into every jar and stir until no cocoa lumps remain.","Top each with {berries:p} frozen berries. Fridge 3, freeze 4; thaw the next one overnight."]},
+ {id:"B3",slot:"B",name:"Berry protein granola parfait",ing:{yp_van:200,granola:45,berries:71},flex:{pid:"granola",min:30,max:60,step:5},stage:3,
+  steps:["Into each of 7 jars put {yp_van:p} YoPRO Vanilla and {berries:p} frozen berries. Lid on, fridge.","Portion {granola:p} granola into 7 small bags or containers ({granola:pw} in the 2 weekend ones). Keep them in the pantry.","Each morning, tip a bag of granola into a jar so it stays crunchy. Jars keep 4 days, so make 4 on Sunday and 3 midweek."]},
+ {id:"B4",slot:"B",name:"Choc malt protein cereal",ing:{nutri:45,milk:300,berries:71},flex:{pid:"nutri",min:30,max:60,step:5},stage:4,
+  steps:["No batch prep. Each morning: {nutri:p} Nutri-Grain High Protein Crunch ({nutri:pw} on weekends), {milk:p} protein milk and {berries:p} berries (thawed overnight in the fridge)."]},
+ {id:"B5",slot:"B",name:"Grab-and-go protein smoothie",ing:{smoothie:400},stage:4,
+  steps:["No prep. Keep 7 bottles of Dairy Farmers Protein Smoothie Vanilla in the fridge and shake well before drinking."]},
+ {id:"B6",slot:"B",name:"Baked berry protein pancake slab",ing:{flour:43,powder:17,yp_van:100,milk:55,noegg:2,berries:71},needsPowder:true,stage:1,
+  steps:["Oven to 180 °C (fan-forced 160 °C). Line a 20 × 30 cm tray with baking paper.","In a big bowl whisk {flour} self raising flour, {powder} protein powder, {noegg} Orgran No Egg, 2 teaspoons cinnamon and 6 Natvia sticks.","In a jug whisk {yp_van} YoPRO Vanilla, {milk} protein milk and the water the No Egg packet asks for (about 2 tablespoons per teaspoon of powder).","Fold the wet into the dry until just combined (lumps are fine). Spread in the tray and scatter {berries} frozen berries over the top.","Bake 30–35 minutes, until a skewer comes out clean. Cool 15 minutes, then cut into 7 slices.","Fridge 3, freeze 4 (wrapped). Eat cold, or warm for 30 seconds."]},
+ {id:"L1",slot:"L",name:"TVP bolognese with protein spaghetti",ing:{vetta:53.6,konjac_s:171,tvp:40,passata:100,onion:70,mush:143,parm:10},stage:2,
+  steps:["Microwave {tvpwater} water for 4 minutes, stir in 2 tablespoons Massel liquid stock, and pour over {tvp} TVP. Leave to soak.","Boil the whole pack of Vetta spaghetti ({vetta}) for the pack time minus 1 minute. Drain.","Konjac: rinse {konjac_s} in a sieve for 1 minute, microwave uncovered 4 minutes, drain, microwave 3 more minutes until it squeaks. Toss with the pasta.","In the big pot with 2 seconds of oil spray, cook {onion} frozen diced onions 5 minutes. Add {mush} sliced mushrooms and 3½ teaspoons minced garlic; cook 8 minutes until the liquid evaporates.","Add the soaked TVP, 1¾ teaspoons smoked paprika, 3½ teaspoons dried Italian herbs and 1 teaspoon chilli flakes. Fry 3 minutes.","Pour in {passata} passata and simmer 10 minutes. Season.","Divide the pasta mix into 7 containers, sauce on top. Add {parm:p} parmesan when serving. Fridge 3, freeze 4."]},
+ {id:"L2",slot:"L",name:"Gochujang chow mein noodles",ing:{vetta:53.6,konjac_n:171,tofu:128.6,tvp:20,stirfry:214,lkk:20,gochu:10},stage:2,
+  steps:["Oven to 220 °C. Drain and press {tofu} firm tofu, cut into 2 cm cubes, spread on 2 lined trays, spray with oil and bake 25 minutes, turning halfway.","Microwave {tvpwater} water for 2 minutes, stir in 1 tablespoon Massel liquid stock and pour over {tvp} TVP.","Boil the whole pack of Vetta spaghetti ({vetta}) for the pack time minus 1 minute. Drain.","Konjac: rinse {konjac_n} in a sieve for 1 minute, microwave uncovered 4 minutes, drain, microwave 3 more minutes. Toss with the pasta.","Mix the sauce in a cup: {lkk} Lee Kum Kee Vegetarian Stir Fry Sauce and {gochu} gochujang.","In your largest pan on high, cook {stirfry} frozen stir-fry vegetables for 8 minutes (2 lots if crowded). Add the TVP, pasta mix, tofu and sauce; toss 2 minutes.","Divide into 7 containers. Fridge 3, freeze 4. Optional at serving: sambal oelek or 1 teaspoon chilli crisp (not counted)."]},
+ {id:"D1",slot:"D",name:"Paneer & chicken-free tikka tray bake",ing:{paneer:100,chicken:71.4,yp_plain:80,vegrice:143,rice:100},flex:{pid:"rice",min:75,max:175,step:25},stage:1,
+  steps:["Oven to 220 °C (fan-forced 200 °C). Line 2 trays.","Marinade in your biggest bowl: {yp_plain} YoPRO Plain, 2 tablespoons + 1 teaspoon garam masala, 2 tablespoons + 1 teaspoon smoked paprika, 3½ teaspoons ground cumin, 3½ teaspoons minced garlic, ½ teaspoon chilli flakes and 1 teaspoon salt.","Cut the Jalsa Paneer block into 10 equal pieces and freeze the spares. Cube {paneer} (2 cm) and tear {chicken} Made With Plants chicken into pieces. Toss in the marinade, spread over both trays, spray with oil.","Bake 25 minutes, swapping shelves and turning halfway.","Microwave {vegrice} veggie rice and the basmati rice pouches as per the packs.","Each of 7 containers: an even share of veggie rice, {rice:p} rice ({rice:pw} in the 2 weekend containers, labelled), then the tray bake. Fridge 3, freeze 4."]},
+ {id:"D2",slot:"D",name:"Paneer keema matar with rice",ing:{paneer:100,tvp:45,peas:100,pti:53.6,onion:70,spinach:71.4,rice:100},flex:{pid:"rice",min:75,max:175,step:25},stage:1,
+  steps:["Oven to 220 °C. Cut the Jalsa Paneer block into 10 equal pieces and freeze the spares. Cube {paneer} (2 cm), spread on a lined tray, spray with oil and bake 15 minutes until golden at the edges.","Microwave {tvpwater} water for 4 minutes, stir in 2 tablespoons Massel liquid stock and pour over {tvp} TVP.","In the big pot with 2 seconds of oil spray, cook {onion} frozen diced onions 5 minutes. Add the soaked TVP and fry 3 minutes.","Pour in {pti} Passage To India Tikka Masala sauce, add {peas} frozen peas and {spinach} frozen spinach. Simmer 12 minutes, adding a splash of water if it gets thick.","Taste (the sauce is already seasoned) and fold in the baked paneer.","Microwave the basmati rice pouches as per the pack. Each of 7 containers: {rice:p} rice ({rice:pw} in the 2 weekend containers, labelled), then the keema. Fridge 3, freeze 4."]},
+ {id:"S1",slot:"S",name:"Protein hot chocolate",ing:{milk:300,cocoa:10},stage:3,
+  steps:["Microwave ½ cup of the milk for 40 seconds. Whisk in {cocoa} cocoa and 7 Natvia sticks to a smooth paste.","Whisk the paste into the rest of {milk} protein milk in a big jug.","Pour {milk:p} into each of 7 jars. Fridge 3, freeze 4. Shake, then heat 2 minutes or drink cold."]},
+ {id:"S2",slot:"S",name:"Wicked Sister chocolate protein pudding",ing:{pudding:170},stage:4,steps:["No prep. Keep 7 pots in the fridge."]},
+ {id:"S3",slot:"S",name:"Musashi crisp protein bar",ing:{musashi:60},stage:4,steps:["No prep. Keep 7 bars in the pantry."]},
+ {id:"S4",slot:"S",name:"Protein smoothie",ing:{smoothie:400},stage:4,steps:["No prep. Keep 7 bottles in the fridge."]},
+ {id:"S5",slot:"S",name:"Fudgy protein brownies",ing:{flour:16,powder:9,cocoa:6,yp_plain:37,milk:18,noegg:1},needsPowder:true,stage:1,
+  steps:["Oven to 175 °C (fan-forced 155 °C). Line a 20 cm square tin.","Whisk {flour} self raising flour, {powder} protein powder, {cocoa} cocoa, {noegg} Orgran No Egg, ⅓ cup Natvia and a pinch of salt.","Stir in {yp_plain} YoPRO Plain, {milk} protein milk and the water the No Egg packet asks for, until thick and glossy.","Spread in the tin and bake 18–20 minutes; the middle should still be slightly soft.","Cool completely, then cut into 7. Fridge 3, freeze 4."]}
+];
+const SLOTS=[["B","Breakfast"],["L","Lunch"],["D","Dinner"],["S","Snack"]];
+const RX=Object.fromEntries(R.map(r=>[r.id,r]));
+
+/* ---------- State ---------- */
+const DEFAULT={settings:{wd:1749,we:1884,p:141,f:64,c:184,mustPaneer:true,priority:"balanced",off:[]},
+ plan:{B:"B2",L:"L2",D:"D2",S:"S1"},have:{},powder:{name:"",kj:"",p:"",f:"",c:"",price:"",size:""},tab:"plan",day:"wd"};
+let S=structuredClone(DEFAULT);
+function load(){try{const j=JSON.parse(localStorage.getItem("sbp")||"null");if(j)S=merge(DEFAULT,j);}catch(e){}}
+function merge(a,b){const o=structuredClone(a);for(const k in b){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k])&&o[k]&&typeof o[k]==="object")o[k]={...o[k],...b[k]};else o[k]=b[k];}return o}
+let dbRef=null,saveT=null,writing=false,pending=false;
+function save(){try{localStorage.setItem("sbp",JSON.stringify(S));}catch(e){}
+ }
+async function pushDb(){if(!dbRef)return;if(writing){pending=true;return}writing=true;
+ try{await dbRef.set({state:JSON.stringify(S),v:1});setSync("Synced to your account");}catch(e){setSync("Saved on this phone")}
+ writing=false;if(pending){pending=false;pushDb()}}
+function setSync(t){document.getElementById("sync").textContent=t}
+
+/* ---------- Maths ---------- */
+function prod(pid){const x=P[pid];if(pid==="powder"){const w=S.powder;return{...x,n:w.name||"Your protein powder",kj:+w.kj||0,p:+w.p||0,f:+w.f||0,c:+w.c||0,price:+w.price||0,pack:+w.size||1000}}return x}
+const powderReady=()=>+S.powder.kj>0&&+S.powder.p>0;
+function mac(pid,g){const x=prod(pid);return{k:x.kj*g/100/4.184,p:x.p*g/100,f:x.f*g/100,c:x.c*g/100}}
+function add(a,b){return{k:a.k+b.k,p:a.p+b.p,f:a.f+b.f,c:a.c+b.c}}
+const Z=()=>({k:0,p:0,f:0,c:0});
+function portion(r,flexG){let t=Z();for(const pid in r.ing){const g=(r.flex&&r.flex.pid===pid&&flexG!=null)?flexG:r.ing[pid];t=add(t,mac(pid,g))}return t}
+function grams(r,flexG){const o={...r.ing};if(r.flex&&flexG!=null)o[r.flex.pid]=flexG;return o}
+/* fit flex ingredients so the day lands near the calorie target */
+function fit(ids,target){const rs=ids.map(id=>RX[id]);const fx=rs.map(r=>r.flex?r.ing[r.flex.pid]:null);
+ const tot=()=>rs.reduce((t,r,i)=>add(t,portion(r,fx[i])),Z());
+ for(let n=0;n<60;n++){const cur=tot();const diff=target-cur.k;let best=null,bestAbs=Math.abs(diff);
+  rs.forEach((r,i)=>{if(!r.flex)return;const dir=diff>0?1:-1;const ng=fx[i]+dir*r.flex.step;if(ng<r.flex.min-1e-6||ng>r.flex.max+1e-6)return;
+   const nk=cur.k+(mac(r.flex.pid,ng).k-mac(r.flex.pid,fx[i]).k);const a=Math.abs(target-nk);if(a<bestAbs-0.5){bestAbs=a;best=[i,ng]}});
+  if(!best)break;fx[best[0]]=best[1]}
+ return{fx,tot:tot()}}
+function dayPlan(plan,dt){const ids=SLOTS.map(([s])=>plan[s]);const target=dt==="wd"?S.settings.wd:S.settings.we;return fit(ids,target)}
+function available(r){return !S.settings.off.includes(r.id)&&(!r.needsPowder||powderReady())}
+function weekly(plan){const wd=dayPlan(plan,"wd"),we=dayPlan(plan,"we");const need={};const per={};
+ SLOTS.forEach(([s],i)=>{const r=RX[plan[s]];const gw=grams(r,wd.fx[i]),ge=grams(r,we.fx[i]);per[r.id]={wd:gw,we:ge,wk:{}};
+  for(const pid in r.ing){const w=5*gw[pid]+2*ge[pid];per[r.id].wk[pid]=w;need[pid]=(need[pid]||0)+w}});
+ return{need,per,wd,we}}
+function shop(plan){const {need}=weekly(plan);let buy=0,avg=0,est=false;const rows=Object.entries(need).map(([pid,g])=>{const x=prod(pid);const packs=Math.max(1,Math.ceil(g/x.pack-0.03));const have=!!S.have[pid];
+  const cost=have?0:packs*x.price;buy+=cost;avg+=x.price*g/x.pack;if(x.est&&!have)est=true;return{pid,x,g,packs,cost,have,left:packs*x.pack-g}});
+ rows.sort((a,b)=>a.x.n.localeCompare(b.x.n));return{rows,buy,avg,est}}
+function score(plan){const w=dayPlan(plan,"wd"),e=dayPlan(plan,"we");const st=S.settings;let s=0;
+ for(const [d,t] of [[w,st.wd],[e,st.we]]){s+=Math.abs(d.tot.k-t)/t*100;if(d.tot.p<st.p)s+=(st.p-d.tot.p)*2;if(d.tot.f>st.f*1.15)s+=(d.tot.f-st.f*1.15)*0.3;}
+ const c=shop(plan).avg;const wt={macros:0.05,balanced:0.35,cheap:1.2}[st.priority]||0.35;return{s:s+c*wt,w,e,c}}
+function combos(){const by=s=>R.filter(r=>r.slot===s&&available(r));const out=[];
+ for(const b of by("B"))for(const l of by("L"))for(const d of by("D"))for(const sn of by("S")){const plan={B:b.id,L:l.id,D:d.id,S:sn.id};
+  if(S.settings.mustPaneer&&![b,l,d,sn].some(r=>r.ing.paneer))continue;out.push({plan,...score(plan)})}
+ return out.sort((a,b)=>a.s-b.s)}
+
+/* ---------- Formatting ---------- */
+const FR=[[0,""],[.25,"¼"],[1/3,"⅓"],[.5,"½"],[2/3,"⅔"],[.75,"¾"],[1,""]];
+function frac(x){const w=Math.floor(x+1e-9);let r=x-w;let best=FR[0],bd=9;for(const f of FR){const d=Math.abs(r-f[0]);if(d<bd){bd=d;best=f}}
+ const whole=best[0]===1?w+1:w;const s=(whole?String(whole):"")+best[1];return s||"0"}
+function amt(pid,g){const x=prod(pid),m=x.m;const gr=Math.round(g);
+ if(m.each){const n=Math.round(g/m.each*2)/2;return `${frac(n)} ${n===1?m.one:m.many}`}
+ if(m.pack){const n=g/x.pack;if(Math.abs(n-Math.round(n))<0.06&&Math.round(n)>0)return `${Math.round(n)} ${Math.round(n)===1?"pack":"packs"} (${gr} g)`;return `${frac(Math.round(n*4)/4)} of a pack (~${gr} g)`}
+ if(m.tsp){const n=Math.round(g/m.tsp*2)/2;return `${frac(n)} teaspoon${n>1?"s":""}`}
+ if(m.tbsp){const n=Math.round(g/m.tbsp*2)/2;return n>=8?`${frac(n/16)} cup (~${gr} g)`:`${frac(n)} tablespoon${n>1?"s":""}`}
+ if(m.cup){const c=g/m.cup;if(c<0.24){const t=Math.round(c*16*2)/2;return `${frac(t)} tablespoon${t>1?"s":""}`}return `${frac(c)} cup${c>1.1?"s":""} (~${gr} g)`}
+ return `${gr} g`}
+const r0=n=>Math.round(n),r1=n=>Math.round(n*10)/10;
+const money=n=>"$"+n.toFixed(2);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function fillSteps(r,per){return r.steps.map(t=>t.replace(/\{(\w+)(?::(pw|p))?\}/g,(_,pid,mode)=>{
+  if(pid==="tvpwater"){const g=per.wk.tvp||0;return amt("milk",g*2)}
+  if(!(pid in per.wk))return "";return amt(pid,mode==="p"?per.wd[pid]:mode==="pw"?per.we[pid]:per.wk[pid])}))}
+
+/* ---------- Views ---------- */
+const app=document.getElementById("app");
+function meter(label,v,t,kind){const pct=Math.min(130,v/t*100);let cls="",st="ok",txt="On target";
+ if(kind==="min"){if(v<t){cls="under";st="lo";txt=`${r0(t-v)} g short`}else txt="Above minimum"}
+ else{const d=v-t;if(Math.abs(d)/t>0.06){cls=d>0?"over":"under";st=d>0?"hi":"lo";txt=(d>0?"+":"")+r0(d)+(label==="Calories"?" kcal":" g")}}
+ return `<div class="meter"><div class="lbl"><span>${label}</span><b>${r0(v)} / ${r0(t)}${label==="Calories"?"":" g"}</b></div><div class="bar ${cls}"><i style="width:${Math.min(100,pct)}%"></i></div><span class="state ${st}">${txt}</span></div>`}
+function planView(){const dt=S.day;const d=dayPlan(S.plan,dt);const st=S.settings;const t=dt==="wd"?st.wd:st.we;const sh=shop(S.plan);
+ let h=`<section class="card"><div class="row" style="justify-content:space-between"><div><div class="eyebrow">This week's plan</div><h2 style="font-size:20px">${dt==="wd"?"Weekday":"Weekend"} totals</h2></div>
+ <div class="seg" role="group" aria-label="Day type"><button type="button" data-day="wd" aria-pressed="${dt==="wd"}">Weekday</button><button type="button" data-day="we" aria-pressed="${dt==="we"}">Weekend</button></div></div>
+ <div class="meters">${meter("Calories",d.tot.k,t)}${meter("Protein",d.tot.p,st.p,"min")}${meter("Fat",d.tot.f,st.f)}${meter("Carbs",d.tot.c,st.c)}</div>
+ <p class="note" style="margin:10px 0 0">Shop this week: <b class="num">${money(sh.buy)}</b>${sh.est?' <span class="est">includes estimated prices</span>':""}</p></section>`;
+ SLOTS.forEach(([s,label],i)=>{const r=RX[S.plan[s]];const g=grams(r,d.fx[i]);const m=portion(r,d.fx[i]);
+  const opts=R.filter(x=>x.slot===s).map(x=>`<option value="${x.id}" ${x.id===r.id?"selected":""} ${available(x)||x.id===r.id?"":"disabled"}>${esc(x.name)}${x.needsPowder&&!powderReady()?" (add protein powder in Settings)":""}</option>`).join("");
+  h+=`<section class="card slot"><div><div class="eyebrow">${label}</div><h3 style="font-size:18px">${esc(r.name)}</h3></div>
+  <div class="macro num" style="text-align:right">${r0(m.k)} kcal<br>${r1(m.p)} g protein</div>
+  <ul class="ing" style="grid-column:1/-1">${Object.keys(g).map(pid=>`<li>${esc(prod(pid).n)}: ${amt(pid,g[pid])}</li>`).join("")}</ul>
+  <label class="eyebrow" for="sel-${s}" style="grid-column:1/-1;margin-top:6px">Swap ${label.toLowerCase()}</label>
+  <select id="sel-${s}" data-slot="${s}">${opts}</select></section>`});
+ return h}
+function optionsView(){const list=combos().slice(0,6);const st=S.settings;
+ if(!list.length)return `<section class="card"><h2>No combinations fit</h2><p class="note">Turn some recipes back on in Settings, or untick “Must include paneer”.</p></section>`;
+ let h=`<section class="card"><div class="eyebrow">Ranked for you</div><h2 style="font-size:20px">Best-fitting weeks</h2>
+ <p class="note" style="margin:6px 0 0">Ranked by how close each week lands to ${st.wd} kcal weekdays, ${st.we} kcal weekends and at least ${st.p} g protein${st.priority==="cheap"?", weighted toward the lowest cost":st.priority==="macros"?", ignoring cost":", balanced against cost"}.</p></section>`;
+ list.forEach((o,i)=>{const cur=SLOTS.every(([s])=>S.plan[s]===o.plan[s]);
+  h+=`<section class="card opt"><div class="tags">${i===0?'<span class="tag best">Best fit</span>':""}${cur?'<span class="tag">Your current plan</span>':""}<span class="tag num">~${money(o.c)}/week</span></div>
+  <ul>${SLOTS.map(([s,l])=>`<li><b>${l}:</b> ${esc(RX[o.plan[s]].name)}</li>`).join("")}</ul>
+  <div class="note num">Weekday ${r0(o.w.tot.k)} kcal · ${r0(o.w.tot.p)} g protein · Weekend ${r0(o.e.tot.k)} kcal · ${r0(o.e.tot.p)} g protein</div>
+  ${cur?"":`<button class="btn" type="button" data-pick="${i}">Use this week</button>`}</section>`});
+ optionsView.list=list;return h}
+function shopView(){const sh=shop(S.plan);
+ let h=`<section class="card"><div class="eyebrow">Woolworths list</div><h2 style="font-size:20px">Shopping for 7 days</h2>
+ <p class="note" style="margin:6px 0 0">This shop: <b class="num">${money(sh.buy)}</b> · Average per week once leftovers carry over: <b class="num">${money(sh.avg)}</b>${sh.est?'<br><span class="est">Prices marked “est.” weren’t shown online; check in store.</span>':""}</p>
+ <div class="row" style="margin-top:10px"><button class="btn" type="button" id="copyList">Copy list</button><span class="note">Tick items you already have.</span></div></section>
+ <section class="card scroll"><table><thead><tr><th>Have</th><th>Product</th><th class="r">Buy</th><th class="r">Cost</th></tr></thead><tbody>`;
+ sh.rows.forEach(r=>{h+=`<tr class="${r.have?"have":""}"><td><input type="checkbox" aria-label="Already have ${esc(r.x.n)}" data-have="${r.pid}" ${r.have?"checked":""}></td>
+ <td>${r.x.id?`<a href="${WW+r.x.id}" target="_blank" rel="noopener" style="color:inherit">${esc(r.x.n)}</a>`:esc(r.x.n)} <span class="note">${esc(r.x.size)}</span><br><span class="note">Uses ${amt(r.pid,r.g)}${r.left>r.x.pack*0.15?` · ${Math.round(r.left)} g left over`:""}</span></td>
+ <td class="r num">${r.packs}</td><td class="r num">${r.have?"–":money(r.cost)}${r.x.est&&!r.have?'<br><span class="est">est.</span>':""}</td></tr>`});
+ h+=`</tbody></table><p class="note">Pantry staples not listed: Massel liquid stock, spices, minced garlic, Natvia, oil spray, chilli add-ons.</p></section>`;return h}
+function cookView(){const w=weekly(S.plan);const rs=SLOTS.map(([s])=>RX[S.plan[s]]).sort((a,b)=>a.stage-b.stage);
+ const oven=rs.filter(r=>r.stage===1).map(r=>r.name),stove=rs.filter(r=>r.stage===2).map(r=>r.name);
+ let h=`<section class="card"><div class="eyebrow">Sunday batch</div><h2 style="font-size:20px">Cook order</h2>
+ <ol class="steps"><li>Turn the oven on first${oven.length?` for ${esc(oven.join(" and "))}`:""}, and put a big pot of water on the induction.</li>
+ <li>Start any TVP soaks in the microwave while the oven heats.</li>
+ <li>Oven trays in, then pasta on the induction${stove.length?` for ${esc(stove.join(" and "))}`:""}. Konjac goes in the microwave while the pasta boils.</li>
+ <li>While sauces simmer, make the jars (breakfast and snack).</li>
+ <li>Portion into containers, cool 30 minutes with lids ajar, then fridge Mon–Wed and freeze Thu–Sun.</li></ol></section>`;
+ rs.forEach(r=>{h+=`<section class="card"><div class="eyebrow">${SLOTS.find(s=>s[0]===r.slot)[1]} · 7 portions</div><h3 style="font-size:18px">${esc(r.name)}</h3>
+ <ol class="steps">${fillSteps(r,w.per[r.id]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol></section>`});return h}
+function settingsView(){const st=S.settings,pw=S.powder;
+ const num=(id,v,l)=>`<label>${l}<input type="number" inputmode="decimal" id="${id}" value="${esc(v)}"></label>`;
+ let h=`<section class="card"><div class="eyebrow">Settings</div><h2 style="font-size:20px">Targets</h2><div class="grid2" style="margin-top:10px">
+ ${num("s-wd",st.wd,"Weekday kcal")}${num("s-we",st.we,"Weekend kcal")}${num("s-p",st.p,"Protein minimum (g)")}${num("s-f",st.f,"Fat (g)")}${num("s-c",st.c,"Carbs (g)")}</div>
+ <label class="chk" style="margin-top:12px"><input type="checkbox" id="s-paneer" ${st.mustPaneer?"checked":""}> Must include paneer</label>
+ <div class="eyebrow" style="margin-top:12px">Rank options by</div><div class="seg" role="group" aria-label="Ranking">${[["macros","Macros"],["balanced","Balanced"],["cheap","Cheapest"]].map(([k,l])=>`<button type="button" data-prio="${k}" aria-pressed="${st.priority===k}">${l}</button>`).join("")}</div></section>
+ <section class="card"><h2 style="font-size:18px">Your protein powder</h2><p class="note">Copy the per-100 g column from your tub. This unlocks the pancake slab and brownies.</p>
+ <label class="note" for="pw-name">Name</label><input type="text" id="pw-name" value="${esc(pw.name)}" placeholder="Brand and flavour">
+ <div class="grid2" style="margin-top:10px">${num("pw-kj",pw.kj,"Energy kJ /100 g")}${num("pw-p",pw.p,"Protein g /100 g")}${num("pw-f",pw.f,"Fat g /100 g")}${num("pw-c",pw.c,"Carbs g /100 g")}${num("pw-size",pw.size,"Tub size (g)")}${num("pw-price",pw.price,"Tub price ($)")}</div></section>
+ <section class="card"><h2 style="font-size:18px">Recipes I'll eat</h2><p class="note">Untick anything you don't want suggested.</p>
+ ${SLOTS.map(([s,l])=>`<div class="eyebrow" style="margin-top:10px">${l}</div>`+R.filter(r=>r.slot===s).map(r=>`<label class="chk" style="margin:6px 0"><input type="checkbox" data-on="${r.id}" ${st.off.includes(r.id)?"":"checked"}> ${esc(r.name)}${r.needsPowder&&!powderReady()?' <span class="locked">needs powder label</span>':""}</label>`).join("")).join("")}</section>
+ <button class="btn ghost" type="button" data-tab="plan">Done</button>`;return h}
+
+function render(){const v={plan:planView,options:optionsView,shop:shopView,cook:cookView,settings:settingsView}[S.tab]||planView;app.innerHTML=v();
+ document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false"))}
+function go(tab){S.tab=tab;save();render();window.scrollTo(0,0)}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,1800)}
+
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.tab)go(b.dataset.tab);
+ if(b.id==="openSettings")go("settings");
+ if(b.dataset.day){S.day=b.dataset.day;save();render()}
+ if(b.dataset.prio){S.settings.priority=b.dataset.prio;save();render()}
+ if(b.dataset.pick){const o=optionsView.list[+b.dataset.pick];S.plan={...o.plan};S.tab="plan";save();render();toast("Plan updated")}
+ if(b.id==="copyList"){const sh=shop(S.plan);const txt=sh.rows.filter(r=>!r.have).map(r=>`${r.packs} × ${r.x.n} ${r.x.size}`).join("\n")+`\nTotal ≈ ${money(sh.buy)}`;
+  try{navigator.clipboard.writeText(txt).then(()=>toast("Copied"),()=>toast("Couldn't copy"))}catch(err){toast("Couldn't copy")}}
+});
+document.addEventListener("change",e=>{const t=e.target;
+ if(t.dataset.slot){S.plan[t.dataset.slot]=t.value;save();render();return}
+ if(t.dataset.have){S.have[t.dataset.have]=t.checked;save();render();return}
+ if(t.dataset.on){const id=t.dataset.on;S.settings.off=S.settings.off.filter(x=>x!==id);if(!t.checked)S.settings.off.push(id);save();return}
+ if(t.id==="s-paneer"){S.settings.mustPaneer=t.checked;save();return}
+ const map={"s-wd":"wd","s-we":"we","s-p":"p","s-f":"f","s-c":"c"};if(map[t.id]){const v=+t.value;if(v>0){S.settings[map[t.id]]=v;save()}return}
+ if(t.id&&t.id.startsWith("pw-")){S.powder[t.id.slice(3)]=t.value;save();return}
+});
+load();render();
+</script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
+</body>
+</html>
